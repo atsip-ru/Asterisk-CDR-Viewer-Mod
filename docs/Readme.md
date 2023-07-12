@@ -348,6 +348,10 @@ CLEAN_OLD_EMPTYDIR=true
 ```
 htpasswd -c /path/to/.htpasswd admin
 ```
+#### Добавить пользователя
+```
+htpasswd -b /path/to/.htpasswd oper
+```
 
 ### Пример конфига для Nginx:
 ```
