@@ -324,7 +324,7 @@ if ( isset($_REQUEST['need_csv']) && $_REQUEST['need_csv'] == 'true' ) {
 	}
 	echo '<p class="dl_csv_box"><button class="dl_csv btn btn-info" data-filepath="'.base64_encode($csv_fname).'">Скачать CSV отчет</button></p>';
 }
-
+//Счетчик найденных записей
 if ( isset($_REQUEST['need_html']) && $_REQUEST['need_html'] == 'true' ) {
 	$query = "SELECT count(*) FROM $db_table_name $where LIMIT $result_limit";
 	try {
@@ -345,7 +345,7 @@ if ( isset($_REQUEST['need_html']) && $_REQUEST['need_html'] == 'true' ) {
 		$i = Config::get('display.main.header_step') - 1;
 
 		try {
-			
+			//Основной запрос
 			$query = "SELECT *, unix_timestamp(calldate) as call_timestamp FROM $db_table_name $where $order $sort LIMIT $result_limit";
 			$sth = $dbh->query($query);
 			if (!$sth) {
@@ -459,7 +459,15 @@ if ( isset($_REQUEST['need_html']) && $_REQUEST['need_html'] == 'true' ) {
 				echo '<tr class="record record_cdr" data-id="'.$row['id'].'" data-filepath="'.$file_params['path'].'">';
 				formatCallDate($row['calldate'],$row['uniqueid']);
 				formatDisposition($row['disposition'], $row['amaflags']);
-				formatSrc($row['src'],$row['clid']);
+				//Поправка для отображения внутреннего номера
+				if (empty($row['cnum'])) {
+					$cdr_dst=$row['src'];
+				} else {
+					$cdr_dst=$row['cnum'];
+				}
+				//formatSrc($row['src'],$row['clid']);
+				//formatSrc($row['cnum'],$row['clid']);
+				formatSrc($cdr_dst,$row['clid']);
 				formatDst($row['dst'], $row['dcontext'] );
 				if ( Config::exists('display.column.did') && Config::get('display.column.did') == 1 ) {
 					if ( isset($row['did']) && strlen($row['did']) ) {
