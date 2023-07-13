@@ -338,7 +338,7 @@ CLEAN_OLD_EMPTYDIR=true
 Получается адрес: http://example.com/cdr/index.php?config=anotherconfig
 
 ### Кратко:
-1. Скачать ZIP архив с GitHub или выполнить `git clone https://github.com/prog-it/Asterisk-CDR-Viewer-Mod.git`
+1. Скачать ZIP архив с GitHub или выполнить `git clone https://github.com/krote5k/Asterisk-CDR-Viewer-Mod.git`
 2. Распаковать или Перенести файлы в нужную папку на сервере
 3. Переименовать файл `inc/config/config.php.sample` в `config.php`. Т.е. будет файл `inc/config/config.php`
 4. Настроить параметры в `inc/config/config.php`
@@ -346,27 +346,27 @@ CLEAN_OLD_EMPTYDIR=true
 
 ### Создание .htpasswd файла
 ```
-htpasswd -c /path/to/.htpasswd admin
+htpasswd -c /var/www/html/cdr/.htpasswd admin
 ```
 #### Добавить пользователя
 ```
-htpasswd -b /path/to/.htpasswd oper
+htpasswd -b /var/www/html/cdr/.htpasswd oper
 ```
 
 ### Пример конфига для Nginx:
 ```
-location /path/to/script {
+location /var/www/html/cdr {
 	auth_basic "CDR Viewer Mod";
-	auth_basic_user_file /path/to/.htpasswd;
+	auth_basic_user_file /var/www/html/cdr/.htpasswd;
 }
 ```
 
 ### Пример конфига для Apache:
 ```
-<Location "/path/to/script">
+<Location "/var/www/html/cdr">
 	AuthName "CDR Viewer Mod"
 	AuthType Basic
-	AuthUserFile /path/to/.htpasswd
+	AuthUserFile /var/www/html/cdr/.htpasswd
 	require valid-user
 </Location>
 ```
@@ -374,9 +374,9 @@ location /path/to/script {
 6. Прописать в конфиге скрипта имена пользователей в виде массива, которым разрешен доступ
 ```
 'admins' => array(
-	'admin1',
-	'admin2',
-	'admin3',
+	'admin',
+	'oper',
+	'secretar',
 ),
 ```
 
@@ -481,9 +481,40 @@ CREATE FUNCTION
 - _100., _100Z, _1005
 - _1XXX, _562., _.0075, _2XXN
 
+## Разграничение прав просмотра вызовов:
+ 
+ Работаем в каталоге `cdr`, делать будем для пользователя **oper**.
 
+1. Создаем файл, например inc/config/config-oper.php где поправляем один раздел: 
+```
+                'admins' => array(
+                        'oper'
+                ),
+```
+2. Добавляем пароль этому пользователю `htpasswd -b .htpasswd oper <secret>`
+3. Проверяем чтобы в файле inc/config/config.php **не было** пользователя **oper**;
+4. Создаем дубликат файла templates/form.php с именем form-oper.php и правим в нём раздел с DID:
+```
+<?php if ( Config::get('display.search.did') == (1||2) ) { ?>
+<tr class="<?php if ( Config::get('display.search.did') == 2 ) { echo 'spoilers'; } ?>">
+        <td>
+                <input type="radio" id="id_order_did" name="order" value="did">&nbsp;<label for="id_order_did">DID (если есть)</label>
+...
+```
+а именно изменяем в нём:
+```
+                <input class="margin-left0" type="text" name="did" id="did" value="978XYZABC3" readonly>
+```
+тем самым забиваем значение номера и запрещаем его изменение;
 
-
-
-
-
+5. А теперь главная правка index-oper.php в 9 строке правим
+```
+        require_once 'templates/form.php';
+```
+на
+```
+        require_once 'templates/form-oper.php';
+```
+Ну и входим в интерфейс просмотра по адресу:
+http://<Ваш IP-адрес>/cdr/index-oper.php?config=oper
+Где запросит установленный <secret> и будет установлен номер `978XYZABC3` в поле **DID (если есть)**.
