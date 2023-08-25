@@ -17,7 +17,7 @@ function getCurrentVersion() {
 
 function checkUpdates() {
 	$res = false;
-	$url  = 'https://api.github.com/repos/prog-it/Asterisk-CDR-Viewer-Mod/releases/latest';
+	$url  = 'https://api.github.com/repos/atsip-ru/Asterisk-CDR-Viewer-Mod/releases/latest';
 	if ( VERSION != '?' ) {
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
