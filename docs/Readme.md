@@ -338,7 +338,7 @@ CLEAN_OLD_EMPTYDIR=true
 Получается адрес: http://example.com/cdr/index.php?config=anotherconfig
 
 ### Кратко:
-1. Скачать ZIP архив с GitHub или выполнить `git clone https://github.com/krote5k/Asterisk-CDR-Viewer-Mod.git`
+1. Скачать ZIP архив с GitHub или выполнить `git clone https://github.com/atsip-ru/Asterisk-CDR-Viewer-Mod.git`
 2. Распаковать или Перенести файлы в нужную папку на сервере
 3. Переименовать файл `inc/config/config.php.sample` в `config.php`. Т.е. будет файл `inc/config/config.php`
 4. Настроить параметры в `inc/config/config.php`
