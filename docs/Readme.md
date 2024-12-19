@@ -363,12 +363,12 @@ location /var/www/html/cdr {
 
 ### Пример конфига для Apache:
 ```
-<Location "/var/www/html/cdr">
+<Directory "/var/www/html/cdr">
 	AuthName "CDR Viewer Mod"
 	AuthType Basic
 	AuthUserFile /var/www/html/cdr/.htpasswd
 	require valid-user
-</Location>
+</Directory>
 ```
 
 6. Прописать в конфиге скрипта имена пользователей в виде массива, которым разрешен доступ
